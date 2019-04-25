@@ -33,7 +33,7 @@ class CI_server(object):
                     peer_info = pickle.dumps(self.active_peers)
                     connection.sendall(peer_info)
                 elif request_method == 'ADD':
-                    print(add, address, connection)
+                    print(data, address, connection)
                     self.add_rfc(data, address, connection)
                 elif request_method == 'LOOKUP':
                     self.client_lookup(data, connection)

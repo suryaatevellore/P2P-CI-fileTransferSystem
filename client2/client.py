@@ -139,19 +139,29 @@ class Client(object):
         self.server_socket.sendall(data)
         print self.server_socket.recv(1024)
     
-    def look_up_rfc(self):
+    def look_up_rfc(self, call=0):
         rfc_num = raw_input("please input the RFC number: ")
         rfc_title = raw_input("please input the RFC title: ")
         data = 'LOOKUP RFC %s P2P-CI/1.0\n' % (rfc_num) + 'Host: %s\n' % (socket.gethostname()) + 'Port: %s\n' % (self.upload_port) + 'Title: %s\n' % (rfc_title)
         self.server_socket.sendall(data)
         data_recv = self.server_socket.recv(1024)
         if data_recv.split(" ")[1] == "404": print "There is no such rfc."
-        else: print data_recv
+        else:
+            if not call:
+                print data_recv
+            else:
+                return data_recv
 
     def download_rfc(self):
-        rfc_num = raw_input("please input the RFC number: ")
-        host_name = raw_input("please input the host name: ")
-        upload_port = raw_input("please input the upload port: ")
+        data_recv = self.look_up_rfc(1)
+        data = data_recv.strip().split()
+        rfc_num = data[3]
+        upload_port = data[-1]
+        print(rfc_num, upload_port)
+        host_name = '127.0.0.1'
+        # rfc_num = raw_input("please input the RFC number: ")
+        # host_name = raw_input("please input the host name: ")
+        # upload_port = raw_input("please input the upload port: ")
         os_info = platform.platform()
         rfc_path = 'rfc%s.txt' % (rfc_num)
         data = 'GET RFC %s P2P-CI/1.0\n' % (rfc_num) + 'Host: %s\n' % (host_name) + 'OS: %s\n' % (os_info)
