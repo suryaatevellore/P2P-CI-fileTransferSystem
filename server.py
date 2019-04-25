@@ -41,8 +41,8 @@ class CI_server(object):
                 else:
                     connection.sendall('P2P-CI/1.0 400 Bad Request\n')
         connection.close()
-                        
-                    
+
+
     def client_quit(self, address):
         _quit_client = self.active_peers.pop(address)
         for _rfc in _quit_client[1]:
@@ -62,9 +62,11 @@ class CI_server(object):
         #response
         data = 'P2P-CI/1.0 200 OK\n' + 'RFC %s %s %s %s\n' % (_rfc_num, _new_rfc[0], _new_rfc[1], _new_rfc[2])
         connection.sendall(data)
-    
+
     def client_lookup(self, data, connection):
         _rfc_num = data[0].split(' ')[2]
+        print(self.active_peers)
+        print(self.available_rfcs)
         if _rfc_num in self.available_rfcs:
             data = 'P2P-CI/1.0 200 OK\n'
             #write data of this rfc into send buffer
@@ -73,7 +75,7 @@ class CI_server(object):
         else:
             data = 'P2P-CI/1.0 404 Not Found\n'
         connection.sendall(data)
-    
+
     def client_list(self, data, connection):
         if self.available_rfcs:
             data = 'P2P-CI/1.0 200 OK\n'
@@ -96,4 +98,4 @@ class CI_server(object):
 
 if __name__ == '__main__':
     server = CI_server()
-    server.main()  
+    server.main()
