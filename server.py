@@ -89,6 +89,7 @@ class CI_server(object):
     def main(self):
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.bind((self.host_name, self.port_num))
+        self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.serverSocket.listen(1)
         print "Server is ready!"
         while True:
