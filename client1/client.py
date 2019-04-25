@@ -156,9 +156,9 @@ class Client(object):
         data_recv = self.look_up_rfc(1)
         data = data_recv.strip().split()
         print(data)
-        rfc_num = data[3]
-        upload_port = data[6]
-        host_name = data[7]
+        rfc_num = data[4]
+        upload_port = data[7]
+        host_name = data[8]
         print(rfc_num, upload_port, host_name)
         # rfc_num = raw_input("please input the RFC number: ")
         # host_name = raw_input("please input the host name: ")
