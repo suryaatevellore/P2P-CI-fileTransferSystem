@@ -66,6 +66,7 @@ class Client(object):
                 print "Please input a valid number! "
 
     def uploadListen(self):
+        print("Listening to a port", self.upload_name, self.upload_port)
         self.upload_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.upload_socket.bind((self.upload_name,self.upload_port))
         self.upload_socket.listen(10)
