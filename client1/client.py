@@ -155,6 +155,7 @@ class Client(object):
     def download_rfc(self):
         data_recv = self.look_up_rfc(1)
         data = data_recv.strip().split()
+        print(data)
         rfc_num = data[3]
         upload_port = data[-1]
         print(rfc_num, upload_port)

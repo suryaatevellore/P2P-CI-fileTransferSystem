@@ -72,7 +72,7 @@ class CI_server(object):
             data = 'P2P-CI/1.0 200 OK\n'
             #write data of this rfc into send buffer
             for record in self.available_rfcs[_rfc_num]:
-                data += 'RFC %s %s %s %s\n' % (_rfc_num, record[2], record[0], record[1])
+                data += 'RFC %s %s %s %s %s\n' % (_rfc_num, record[2], record[0], record[1], record[3][0])
         else:
             data = 'P2P-CI/1.0 404 Not Found\n'
         connection.sendall(data)
