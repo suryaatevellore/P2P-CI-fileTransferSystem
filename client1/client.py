@@ -159,10 +159,11 @@ class Client(object):
         print(data)
         rfc_num = data[4]
         upload_port = data[7]
-        host_name = data[8]
+        # host_name = data[6]
+        host_name = raw_input("please input the host name: ")
         print(rfc_num, upload_port, host_name)
         # rfc_num = raw_input("please input the RFC number: ")
-        # host_name = raw_input("please input the host name: ")
+
         # upload_port = raw_input("please input the upload port: ")
         os_info = platform.platform()
         rfc_path = 'rfc%s.txt' % (rfc_num)
