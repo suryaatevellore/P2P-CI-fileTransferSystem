@@ -33,6 +33,7 @@ class CI_server(object):
                     peer_info = pickle.dumps(self.active_peers)
                     connection.sendall(peer_info)
                 elif request_method == 'ADD':
+                    print(add, address, connection)
                     self.add_rfc(data, address, connection)
                 elif request_method == 'LOOKUP':
                     self.client_lookup(data, connection)
@@ -54,7 +55,7 @@ class CI_server(object):
 
     def add_rfc(self, data, address, connection):
         _rfc_num = data[0].split(' ')[2]
-        _new_rfc = (data[1].split(' ')[1], data[2].split(' ')[1], data[3].split(' ')[1])
+        _new_rfc = (data[1].split(' ')[1], data[2].split(' ')[1], data[3].split(' ')[1], address)
         self.available_rfcs.setdefault(_rfc_num, [])
         self.available_rfcs[_rfc_num].append(_new_rfc)
         #update active_peer
