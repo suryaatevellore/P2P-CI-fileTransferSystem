@@ -67,7 +67,8 @@ class Client(object):
 
     def uploadListen(self):
         self.upload_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.upload_socket.bind((self.upload_name,self.upload_port))
+        self.upload_socket.bind(('',self.upload_port))
+        # self.upload_socket.bind((self.upload_name,self.upload_port))
         self.upload_socket.listen(10)
         while self.client_active:
             connection, address = self.upload_socket.accept()

@@ -9,7 +9,7 @@ import pickle
 
 class Client(object):
     def __init__(self, CI_server):
-        # init server
+        # init server 
         self.server_port = 7734
         self.server_name = CI_server
         self.server_address = socket.gethostbyname(self.server_name)
@@ -22,7 +22,7 @@ class Client(object):
         self.download_socket = None
         # upload listen flag to true
         self.client_active = True
-        # print info
+        # print info 
         print 'Name: '+self.server_name
         print 'Address: '+self.server_address
         print 'Server port number: '+str(self.server_port)
@@ -43,9 +43,9 @@ class Client(object):
         print'7. quit\n'
         while(self.client_active):
             request = raw_input('Please input your request: ')
-            if request != "1" and self.server_socket==None:
+            if request != "1" and self.server_socket==None: 
                 print"Please connect first!"
-                continue
+                continue 
             if request == "1":
                 print"Trying to connect.."
                 self.connect_to_server()
@@ -66,9 +66,9 @@ class Client(object):
                 print "Please input a valid number! "
 
     def uploadListen(self):
-        print("Listening to a port", self.upload_name, self.upload_port)
         self.upload_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.upload_socket.bind((self.upload_name,self.upload_port))
+        self.upload_socket.bind(('',self.upload_port))
+        # self.upload_socket.bind((self.upload_name,self.upload_port))
         self.upload_socket.listen(10)
         while self.client_active:
             connection, address = self.upload_socket.accept()
@@ -77,7 +77,7 @@ class Client(object):
         upload_thread.join()
         self.upload_socket.close()
         print 'Upload service is closed now!'
-
+    
     def buildConnection(self, connection, address):
         data = connection.recv(1024)
         if data == 'QUIT P2P-CI/1.0\n':
@@ -117,7 +117,7 @@ class Client(object):
             else:
                 connection.sendall('P2P-CI/1.0 400 Bad Request\n')
             connection.close()
-
+    
     def connect_to_server(self):
         # create client socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -126,8 +126,8 @@ class Client(object):
         except BaseException, exc:
             print "Caught exception: %s" % exc
         data = 'CONNECT %s P2P-CI/1.0\n' % (str(self.upload_port))
-        self.server_socket.sendall(data)
-
+        self.server_socket.sendall(data) 
+    
     def add_rfc(self):
         rfc_num = raw_input("please input the RFC number: ")
         rfc_title = raw_input("please input the RFC title: ")
@@ -139,32 +139,20 @@ class Client(object):
         data = 'LIST ALL P2P-CI/1.0\n' + 'Host: %s\n' % (socket.gethostname()) + 'Port: %s\n' % (self.upload_port)
         self.server_socket.sendall(data)
         print self.server_socket.recv(1024)
-
-    def look_up_rfc(self, call=0):
+    
+    def look_up_rfc(self):
         rfc_num = raw_input("please input the RFC number: ")
         rfc_title = raw_input("please input the RFC title: ")
         data = 'LOOKUP RFC %s P2P-CI/1.0\n' % (rfc_num) + 'Host: %s\n' % (socket.gethostname()) + 'Port: %s\n' % (self.upload_port) + 'Title: %s\n' % (rfc_title)
         self.server_socket.sendall(data)
         data_recv = self.server_socket.recv(1024)
         if data_recv.split(" ")[1] == "404": print "There is no such rfc."
-        else:
-            if not call:
-                print data_recv
-            else:
-                return data_recv
+        else: print data_recv
 
     def download_rfc(self):
-        data_recv = self.look_up_rfc(1)
-        data = data_recv.strip().split()
-        print(data)
-        rfc_num = data[4]
-        upload_port = data[7]
-        # host_name = data[6]
+        rfc_num = raw_input("please input the RFC number: ")
         host_name = raw_input("please input the host name: ")
-        print(rfc_num, upload_port, host_name)
-        # rfc_num = raw_input("please input the RFC number: ")
-
-        # upload_port = raw_input("please input the upload port: ")
+        upload_port = raw_input("please input the upload port: ")
         os_info = platform.platform()
         rfc_path = 'rfc%s.txt' % (rfc_num)
         data = 'GET RFC %s P2P-CI/1.0\n' % (rfc_num) + 'Host: %s\n' % (host_name) + 'OS: %s\n' % (os_info)
@@ -193,7 +181,7 @@ class Client(object):
             rfc_file.close()
             print "Finished! Total length is %s"%(total_length)
         self.download_socket.close()
-
+    
     def get_all_clients(self):
         data = 'QUERY P2P-CI/1.0\n'
         self.server_socket.sendall(data)
