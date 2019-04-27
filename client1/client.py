@@ -12,7 +12,8 @@ class Client(object):
         # init server 
         self.server_port = 7734
         self.server_name = CI_server
-        self.server_address = socket.gethostbyname(self.server_name)
+        #self.server_address = socket.gethostbyname(self.server_name)
+        self.server_address = '10.155.19.185'
         # init upload info
         self.upload_name = socket.gethostname()
         self.upload_port = 50000 + random.randint(1,500)
@@ -123,7 +124,7 @@ class Client(object):
         # create client socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.server_socket.connect((self.server_name, self.server_port))
+            self.server_socket.connect((self.server_address, self.server_port))
         except BaseException, exc:
             print "Caught exception: %s" % exc
         data = 'CONNECT %s P2P-CI/1.0\n' % (str(self.upload_port))

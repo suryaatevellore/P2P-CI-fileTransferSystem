@@ -14,7 +14,8 @@ class Client(object):
         self.server_name = CI_server
         self.server_address = socket.gethostbyname(self.server_name)
         # init upload info
-        self.upload_name = socket.gethostname()
+        #self.upload_name = socket.gethostname()
+        self.upload_name = '192.168.140.150'
         self.upload_port = 50000 + random.randint(1,500)
         # init sockets
         self.server_socket = None
