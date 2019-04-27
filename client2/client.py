@@ -62,6 +62,7 @@ class Client(object):
                 self.get_all_clients()
             elif request == "7":
                 self.quit()
+                sys.exit(1)
             else:
                 print "Please input a valid number! "
 
