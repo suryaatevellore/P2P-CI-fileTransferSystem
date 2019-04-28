@@ -18,7 +18,6 @@ class Client(object):
         # init upload info
         #self.upload_name = socket.gethostname()
         self.upload_name = upload_ip
-        self.upload_name = '192.168.140.155'
         self.upload_port = 50000 + random.randint(1,500)
         # init sockets
         self.server_socket = None
@@ -66,6 +65,7 @@ class Client(object):
                 self.get_all_clients()
             elif request == "7":
                 self.quit()
+                sys.exit(1)
             else:
                 print "Please input a valid number! "
 
@@ -192,7 +192,7 @@ class Client(object):
                 counter += len(recv_content)
                 rfc_file.write(recv_content)
                 print 'downloading...'
-                time.sleep(0.3)
+                time.sleep(1)
                 recv_content = self.download_socket.recv(1024)
             rfc_file.close()
             print "Finished! Total length is %s"%(total_length)
@@ -211,7 +211,6 @@ class Client(object):
         self.client_active = False
         time.sleep(2)
         print("Goodbye")
-        sys.exit(0)
 
 if __name__ == '__main__':
     upload_ip = '192.168.140.155'
