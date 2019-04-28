@@ -15,7 +15,7 @@ class Client(object):
         self.server_address = socket.gethostbyname(self.server_name)
         # init upload info
         #self.upload_name = socket.gethostname()
-        self.upload_name = '192.168.140.150'
+        self.upload_name = '192.168.140.155'
         self.upload_port = 50000 + random.randint(1,500)
         # init sockets
         self.server_socket = None
@@ -197,7 +197,7 @@ class Client(object):
 
 if __name__ == '__main__':
     if len(sys.argv)>2: hostname = sys.argv[2]
-    else: hostname = 'localhost'
+    else: hostname = '192.168.140.150'
     client = Client(hostname)
     client.main()
 
