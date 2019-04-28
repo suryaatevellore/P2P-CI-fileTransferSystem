@@ -6,15 +6,19 @@ import time
 import os.path
 import platform
 import pickle
+import time
+
 
 class Client(object):
-    def __init__(self, CI_server):
-        # init server
+    def __init__(self, CI_server, upload_ip):
+        # init server 
         self.server_port = 7734
         self.server_name = CI_server
         self.server_address = socket.gethostbyname(self.server_name)
         # init upload info
-        self.upload_name = socket.gethostname()
+        #self.upload_name = socket.gethostname()
+        self.upload_name = upload_ip
+        self.upload_name = '192.168.140.155'
         self.upload_port = 50000 + random.randint(1,500)
         # init sockets
         self.server_socket = None
@@ -22,9 +26,9 @@ class Client(object):
         self.download_socket = None
         # upload listen flag to true
         self.client_active = True
-        # print info
-        print 'Name: '+self.server_name
-        print 'Address: '+self.server_address
+        # print info 
+        print 'Server Name: '+ self.server_name
+        print 'Server Address: '+ self.server_address
         print 'Server port number: '+str(self.server_port)
         print 'Upload server name: '+self.upload_name
         print 'Upload port: '+str(self.upload_port)
@@ -43,9 +47,9 @@ class Client(object):
         print'7. quit\n'
         while(self.client_active):
             request = raw_input('Please input your request: ')
-            if request != "1" and self.server_socket==None:
+            if request != "1" and self.server_socket==None: 
                 print"Please connect first!"
-                continue
+                continue 
             if request == "1":
                 print"Trying to connect.."
                 self.connect_to_server()
@@ -62,13 +66,12 @@ class Client(object):
                 self.get_all_clients()
             elif request == "7":
                 self.quit()
-                sys.exit(1)
             else:
                 print "Please input a valid number! "
 
     def uploadListen(self):
-        print("Listening to a port", self.upload_name, self.upload_port)
         self.upload_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        # self.upload_socket.bind(('',self.upload_port))
         self.upload_socket.bind((self.upload_name,self.upload_port))
         self.upload_socket.listen(10)
         while self.client_active:
@@ -78,7 +81,7 @@ class Client(object):
         upload_thread.join()
         self.upload_socket.close()
         print 'Upload service is closed now!'
-
+    
     def buildConnection(self, connection, address):
         data = connection.recv(1024)
         if data == 'QUIT P2P-CI/1.0\n':
@@ -118,7 +121,7 @@ class Client(object):
             else:
                 connection.sendall('P2P-CI/1.0 400 Bad Request\n')
             connection.close()
-
+    
     def connect_to_server(self):
         # create client socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -127,8 +130,8 @@ class Client(object):
         except BaseException, exc:
             print "Caught exception: %s" % exc
         data = 'CONNECT %s P2P-CI/1.0\n' % (str(self.upload_port))
-        self.server_socket.sendall(data)
-
+        self.server_socket.sendall(data) 
+    
     def add_rfc(self):
         rfc_num = raw_input("please input the RFC number: ")
         rfc_title = raw_input("please input the RFC title: ")
@@ -140,7 +143,7 @@ class Client(object):
         data = 'LIST ALL P2P-CI/1.0\n' + 'Host: %s\n' % (socket.gethostname()) + 'Port: %s\n' % (self.upload_port)
         self.server_socket.sendall(data)
         print self.server_socket.recv(1024)
-
+    
     def look_up_rfc(self, call=0):
         rfc_num = raw_input("please input the RFC number: ")
         rfc_title = raw_input("please input the RFC title: ")
@@ -148,24 +151,24 @@ class Client(object):
         self.server_socket.sendall(data)
         data_recv = self.server_socket.recv(1024)
         if data_recv.split(" ")[1] == "404": print "There is no such rfc."
-        else:
+        else: 
             if not call:
                 print data_recv
-            else:
-                return data_recv
+            else:return data_recv
 
     def download_rfc(self):
         data_recv = self.look_up_rfc(1)
-        data = data_recv.strip().split()
-        print(data)
-        rfc_num = data[4]
-        upload_port = data[7]
-        # host_name = data[6]
-        host_name = raw_input("please input the host name: ")
-        print(rfc_num, upload_port, host_name)
-        # rfc_num = raw_input("please input the RFC number: ")
-
-        # upload_port = raw_input("please input the upload port: ")
+        data = data_recv.strip().split(" ")
+        print(data_recv.strip().split(" "))
+        print("RFC number to be downloaded is ",data[3])
+        print("Upload server address is ",data[7])
+        print("Upload server port is ",data[6])
+        #rfc_num = raw_input("please input the RFC number: ")
+        #host_name = raw_input("please input the host name: ")
+        #upload_port = raw_input("please input the upload port: ")
+        rfc_num = data[3]
+        host_name = data[7]
+        upload_port = data[6]
         os_info = platform.platform()
         rfc_path = 'rfc%s.txt' % (rfc_num)
         data = 'GET RFC %s P2P-CI/1.0\n' % (rfc_num) + 'Host: %s\n' % (host_name) + 'OS: %s\n' % (os_info)
@@ -194,7 +197,7 @@ class Client(object):
             rfc_file.close()
             print "Finished! Total length is %s"%(total_length)
         self.download_socket.close()
-
+    
     def get_all_clients(self):
         data = 'QUERY P2P-CI/1.0\n'
         self.server_socket.sendall(data)
@@ -206,10 +209,13 @@ class Client(object):
         print self.server_socket.recv(1024)
         self.server_socket.close()
         self.client_active = False
+        time.sleep(2)
+        print("Goodbye")
+        sys.exit(0)
 
 if __name__ == '__main__':
-    if len(sys.argv)>2: hostname = sys.argv[2]
-    else: hostname = 'localhost'
-    client = Client(hostname)
+    upload_ip = '192.168.140.155'
+    server_ip = '192.168.140.150'
+    client = Client(server_ip, upload_ip)
     client.main()
 
