@@ -12,10 +12,10 @@ class Client(object):
         # init server 
         self.server_port = 7734
         self.server_name = CI_server
-        #self.server_address = socket.gethostbyname(self.server_name)
-        self.server_address = '10.155.19.185'
+        self.server_address = socket.gethostbyname(self.server_name)
         # init upload info
-        self.upload_name = socket.gethostname()
+        #self.upload_name = socket.gethostname()
+        self.upload_name = '192.168.140.150'
         self.upload_port = 50000 + random.randint(1,500)
         # init sockets
         self.server_socket = None
@@ -63,7 +63,6 @@ class Client(object):
                 self.get_all_clients()
             elif request == "7":
                 self.quit()
-                sys.exit(1)
             else:
                 print "Please input a valid number! "
 
@@ -124,7 +123,7 @@ class Client(object):
         # create client socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.server_socket.connect((self.server_address, self.server_port))
+            self.server_socket.connect((self.server_name, self.server_port))
         except BaseException, exc:
             print "Caught exception: %s" % exc
         data = 'CONNECT %s P2P-CI/1.0\n' % (str(self.upload_port))
@@ -142,16 +141,21 @@ class Client(object):
         self.server_socket.sendall(data)
         print self.server_socket.recv(1024)
     
-    def look_up_rfc(self):
+    def look_up_rfc(self, call=0):
         rfc_num = raw_input("please input the RFC number: ")
         rfc_title = raw_input("please input the RFC title: ")
         data = 'LOOKUP RFC %s P2P-CI/1.0\n' % (rfc_num) + 'Host: %s\n' % (socket.gethostname()) + 'Port: %s\n' % (self.upload_port) + 'Title: %s\n' % (rfc_title)
         self.server_socket.sendall(data)
         data_recv = self.server_socket.recv(1024)
         if data_recv.split(" ")[1] == "404": print "There is no such rfc."
-        else: print data_recv
+        else: 
+            if not call:
+                print data_recv
+            else:return data_recv
 
     def download_rfc(self):
+        data_recv = self.look_up_rfc(1)
+        print(data_recv)
         rfc_num = raw_input("please input the RFC number: ")
         host_name = raw_input("please input the host name: ")
         upload_port = raw_input("please input the upload port: ")

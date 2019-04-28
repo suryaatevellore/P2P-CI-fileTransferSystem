@@ -7,15 +7,16 @@ import os.path
 import platform
 import pickle
 
+
 class Client(object):
-    def __init__(self, CI_server):
+    def __init__(self, CI_server, upload_ip):
         # init server 
         self.server_port = 7734
         self.server_name = CI_server
-        self.server_address = socket.gethostbyname(self.server_name)
+        # self.server_address = socket.gethostbyname(self.server_name)
         # init upload info
         #self.upload_name = socket.gethostname()
-        self.upload_name = '192.168.140.150'
+        self.upload_name = upload_ip
         self.upload_port = 50000 + random.randint(1,500)
         # init sockets
         self.server_socket = None
@@ -24,8 +25,8 @@ class Client(object):
         # upload listen flag to true
         self.client_active = True
         # print info 
-        print 'Name: '+self.server_name
-        print 'Address: '+self.server_address
+        print 'Server Name: '+ self.server_name
+        print 'Server Address: '+ self.server_address
         print 'Server port number: '+str(self.server_port)
         print 'Upload server name: '+self.upload_name
         print 'Upload port: '+str(self.upload_port)
@@ -68,8 +69,8 @@ class Client(object):
 
     def uploadListen(self):
         self.upload_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.upload_socket.bind(('',self.upload_port))
-        # self.upload_socket.bind((self.upload_name,self.upload_port))
+        # self.upload_socket.bind(('',self.upload_port))
+        self.upload_socket.bind((self.upload_name,self.upload_port))
         self.upload_socket.listen(10)
         while self.client_active:
             connection, address = self.upload_socket.accept()
@@ -141,16 +142,21 @@ class Client(object):
         self.server_socket.sendall(data)
         print self.server_socket.recv(1024)
     
-    def look_up_rfc(self):
+    def look_up_rfc(self, call=0):
         rfc_num = raw_input("please input the RFC number: ")
         rfc_title = raw_input("please input the RFC title: ")
         data = 'LOOKUP RFC %s P2P-CI/1.0\n' % (rfc_num) + 'Host: %s\n' % (socket.gethostname()) + 'Port: %s\n' % (self.upload_port) + 'Title: %s\n' % (rfc_title)
         self.server_socket.sendall(data)
         data_recv = self.server_socket.recv(1024)
         if data_recv.split(" ")[1] == "404": print "There is no such rfc."
-        else: print data_recv
+        else: 
+            if not call:
+                print data_recv
+            else:return data_recv
 
     def download_rfc(self):
+        data_recv = self.look_up_rfc(1)
+        print(data_recv)
         rfc_num = raw_input("please input the RFC number: ")
         host_name = raw_input("please input the host name: ")
         upload_port = raw_input("please input the upload port: ")
@@ -196,8 +202,8 @@ class Client(object):
         self.client_active = False
 
 if __name__ == '__main__':
-    if len(sys.argv)>2: hostname = sys.argv[2]
-    else: hostname = 'localhost'
-    client = Client(hostname)
+    upload_ip = '192.168.140.155'
+    server_ip = '192.168.140.150'
+    client = Client(server_ip, upload_ip)
     client.main()
 
